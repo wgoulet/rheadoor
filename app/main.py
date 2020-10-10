@@ -8,7 +8,7 @@ import pprint
 
 app = FastAPI()
 
-connection = sqlite3.connect("rasp.db")
+connection = sqlite3.connect("rasp.db",detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
 cursor = connection.cursor()
 
 cursor.execute("SELECT count(name) FROM sqlite_master WHERE type='table' AND name='work'")
@@ -16,7 +16,7 @@ cursor.execute("SELECT count(name) FROM sqlite_master WHERE type='table' AND nam
 if cursor.fetchone()[0]!=1:
     print("Creating table")
     cursor.execute("CREATE TABLE work (name TEXT, value TEXT, \
-        workid TEXT, workstatus TEXT, workcreated DATE, workdone DATE)")
+        workid TEXT, workstatus TEXT, workcreated TIMESTAMP, workdone TIMESTAMP)")
     connection.commit()
 
 class Item(BaseModel):
@@ -31,6 +31,22 @@ class Item(BaseModel):
 def read_root():
     return {"Hello": "World"}
 
+@app.put("/items/{item_id}",response_model=Item)
+def update_item(item_id: str, item: Item):
+    connection = sqlite3.connect("rasp.db")
+    cursor = connection.cursor()
+    cursor.execute("UPDATE work SET name=?,value=?,workid=?,workstatus=?, \
+        workcreated=?,workdone=? WHERE workid = ?",
+        [item.name,item.value,item.workid,item.workstatus,
+        item.workcreated,item.workdone, item_id]).fetchone()
+    connection.commit()
+    row = cursor.execute("SELECT * FROM work WHERE workid = ?",[item_id]).fetchone()
+    uitem = Item(name=row[0],value=row[1])
+    uitem.workid = row[2]
+    uitem.workstatus = row[3]
+    uitem.workcreated = row[4]
+    uitem.workdone = row[5]
+    return uitem
 
 @app.get("/items/{item_id}")
 def read_item(item_id: str):
@@ -53,14 +69,12 @@ def read_items():
     connection.commit()
     items = []
     for row in rows:
-        rec = {}
-        rec['name'] = row[0]
-        rec['value'] = row[1]
-        rec['id'] = row[2]
-        rec['status'] = row[3]
-        rec['created'] = row[4]
-        rec['done'] = row[5]
-        items.append(rec)
+        item = Item(name=row[0],value=row[1])
+        item.workid = row[2]
+        item.workstatus = row[3]
+        item.workcreated = row[4]
+        item.workdone = row[5]
+        items.append(item)
     return items
 
 @app.post("/items")
