@@ -26,23 +26,25 @@ def main():
     while True:
         r = requests.get(workurl)
         r.raise_for_status()
-        work = r.json()
-
-        for items in work:
-            displaycolor(items['value'],sense)
-            item = Item.parse_obj(items)
-            updateworkitem(item)
-            #if(items['value'] == 'display: red'):
-            #    sense.show_message("From the internet!", text_colour=red)
-            #    time.sleep(5)
-            #if(items['value'] == 'display: blue'):
-            #    sense.show_message("From the internet!", text_colour=blue)
+        worklist = r.json()
+        didwork = False
+        for work in worklist:
+            item = Item.parse_obj(work)
+            if(item.workstatus != 'DONE'):
+                displaycolor(item.value,sense)
+                updateworkitem(item)
+                time.sleep(5)
+                didwork = True
+        if(didwork == False):
+            pixel = (0,0,255) 
+            sense.set_pixel(0,0,pixel)
             time.sleep(5)
+            sense.clear()
         time.sleep(30)
 
 def updateworkitem(item: Item):
     item.workstatus = "DONE"
-    item.workdone = datetime.datetime.now().isoformat()
+    item.workdone = datetime.datetime.utcnow()
     r = requests.put("{0}/{1}".format(workurl,item.workid),data=item.json())
     r.raise_for_status()
 
