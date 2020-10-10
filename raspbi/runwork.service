@@ -1,0 +1,13 @@
+[Unit]
+Description=Execute core python app at start
+Wants=network.target
+After=syslog.target network-online.target
+
+[Service]
+Type=simple
+# Found this workaround per https://serverfault.com/questions/867830/systemd-start-service-only-after-dns-is-available
+ExecStartPre=/bin/bash -c 'until host keycloak.wgoulet.com; do sleep 1; done'
+ExecStart=/home/pi/.local/share/virtualenvs/raspbi-Pmn_b57K/bin/python /home/pi/code/rheadoor/raspbi/runwork.py
+
+[Install]
+WantedBy=multi-user.target
