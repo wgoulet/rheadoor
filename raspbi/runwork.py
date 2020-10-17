@@ -49,15 +49,15 @@ def updateworkitem(item: Item):
     r.raise_for_status()
 
 def displaycolor(work,sense):
-    work,color = work.split(':')
+    work,color,message = work.split(':')
     if(color == 'red'):
-        sense.show_message("From the internet!", text_colour=red)
+        sense.show_message(message, text_colour=red)
     if(color == 'green'):
-        sense.show_message("From the internet!", text_colour=green)
+        sense.show_message(message, text_colour=green)
     if(color == 'blue'):
-        sense.show_message("From the internet!", text_colour=blue)
+        sense.show_message(message, text_colour=blue)
     if(color == 'purple'):
-        sense.show_message("From the internet!", text_colour=purple)
+        sense.show_message(message, text_colour=purple)
 
 if __name__ == "__main__":
     main()
