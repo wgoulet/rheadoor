@@ -8,6 +8,7 @@ red = (255, 0, 0)
 blue = (0,0,255)
 green = (0,255,0)
 purple = (127,0,127)
+orange= (255,69,0)
 
 class Item(BaseModel):
     name: str
@@ -58,6 +59,8 @@ def displaycolor(work,sense):
         sense.show_message(message, text_colour=blue)
     if(color == 'purple'):
         sense.show_message(message, text_colour=purple)
+    if(color == 'orange'):
+        sense.show_message(message, text_colour=orange)
 
 if __name__ == "__main__":
     main()
