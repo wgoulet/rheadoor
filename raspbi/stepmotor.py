@@ -1,3 +1,12 @@
+# Stepper motor controller script
+# Equipment: 
+# Sparkfun Easydriver ROB-12779
+# Bipolar stepper motor 17HS16-2004S
+# Power supply: 12v 1.0A <-- wrong power supply not 
+# providing sufficient amps can make it difficult to figure
+# out if your wiring or code is bad. Make sure you are providing
+# enough power.
+
 import RPi.GPIO as GPIO
 import time
 
@@ -17,8 +26,7 @@ def initController():
     GPIO.setup(STEP,GPIO.OUT)
     GPIO.setup(DIR,GPIO.OUT)
 
-    # Turn off all pins except ENABLE
-    GPIO.output(ENABLE,GPIO.HIGH)
+    GPIO.output(ENABLE,GPIO.LOW)
     GPIO.output(MS1,GPIO.LOW)
     GPIO.output(MS2,GPIO.LOW)
     GPIO.output(STEP,GPIO.LOW)
@@ -27,15 +35,22 @@ def initController():
 
 def main():
     initController()
-    # Adopting from Arduino example, we will toggle the DIR
-    # from low to high to move the motor in the forward direction
+    # Drive the motor forward
     GPIO.output(DIR,GPIO.LOW)
-    for i in range(0,1000):
-        GPIO.output(DIR,GPIO.HIGH)
-        time.sleep(0.001)
-        GPIO.output(DIR,GPIO.LOW)
-       # time.sleep(.1)
+    for i in range(0,10000):
+        GPIO.output(STEP,GPIO.HIGH)
+        time.sleep(.001)
+        GPIO.output(STEP,GPIO.LOW)
 
+    time.sleep(2)
+    # Drive the motor backward
+    GPIO.output(DIR,GPIO.HIGH)
+    for i in range(0,10000):
+        GPIO.output(STEP,GPIO.HIGH)
+        time.sleep(.001)
+        GPIO.output(STEP,GPIO.LOW)
+
+    GPIO.output(ENABLE,GPIO.HIGH)
     GPIO.cleanup()
 
 if __name__ == "__main__":
