@@ -1,6 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel
 from sense_hat import SenseHat
+from stepmotor import StepMotor
 import requests
 import datetime
 import time
@@ -21,8 +22,12 @@ class Item(BaseModel):
 workurl = "http://keycloak.wgoulet.com:9080/items"
 
 def main():
-    sense = SenseHat()
-    sense.set_rotation(180)
+    usesense = True
+    try:
+        sense = SenseHat()
+        sense.set_rotation(180)
+    except OSError:
+        usesense = False
 
     while True:
         r = requests.get(workurl)
@@ -31,16 +36,24 @@ def main():
         didwork = False
         for work in worklist:
             item = Item.parse_obj(work)
+            # Get the work type
             if(item.workstatus != 'DONE'):
-                displaycolor(item.value,sense)
-                updateworkitem(item)
-                time.sleep(5)
-                didwork = True
-        if(didwork == False):
-            pixel = (0,0,255) 
-            sense.set_pixel(0,0,pixel)
-            time.sleep(5)
-            sense.clear()
+                worktype,workarg1,workarg2 = item.value.split(':')
+                if((worktype == 'display') and (usesense == True)):
+                    displaycolor(item.value,sense)
+                    updateworkitem(item)
+                    time.sleep(5)
+                    didwork = True
+
+                if((didwork == False) and (usesense == True)):
+                    pixel = (0,0,255) 
+                    sense.set_pixel(0,0,pixel)
+                    time.sleep(5)
+                    sense.clear()
+                if(worktype == 'motordrive'):
+                    controlmotor(item.value)
+                    updateworkitem(item)
+
         time.sleep(30)
 
 def updateworkitem(item: Item):
@@ -48,6 +61,14 @@ def updateworkitem(item: Item):
     item.workdone = datetime.datetime.utcnow()
     r = requests.put("{0}/{1}".format(workurl,item.workid),data=item.json())
     r.raise_for_status()
+
+def controlmotor(work):
+    worktype,direction,duration = work.split(':')
+    stepper = StepMotor()
+    if((worktype == 'motordrive') and (direction == 'forward')):
+        stepper.motorForward()
+    if((worktype == 'motordrive') and (direction == 'backward')):
+        stepper.motorBackward()
 
 def displaycolor(work,sense):
     work,color,message = work.split(':')
