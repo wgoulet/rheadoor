@@ -38,7 +38,7 @@ class StepMotor:
         GPIO.setup(RESET,GPIO.OUT)
 
         GPIO.output(ENABLE,GPIO.LOW)
-        GPIO.output(MS1,GPIO.LOW)
+        GPIO.output(MS1,GPIO.HIGH)
         GPIO.output(MS2,GPIO.LOW)
         GPIO.output(STEP,GPIO.LOW)
         GPIO.output(DIR,GPIO.LOW)
