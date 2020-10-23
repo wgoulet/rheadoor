@@ -12,7 +12,13 @@
 # 750ma for best operation. Also note the pot on the easydriver
 # isn't marked with reliable min/max settings, so measure the
 # voltage at TP1 and ground and when the volts are max ~5v, you 
-# know you have the pot maxed out)
+# know you have the pot maxed out). Finally, learned the hard way
+# that since the Easydriver doesn't ship with the header pins soldered
+# on, while it is tempting to just run jumpers through the board from
+# the motors/raspberry pi into a breadboard, this type of connectivity
+# caused me fits when trying to drive the motor. When I soldered header
+# pins to the Easydriver and plugged it into my breadboard, the motor
+# motion became incredibly smooth.
 
 import RPi.GPIO as GPIO
 import time
