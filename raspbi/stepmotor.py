@@ -75,10 +75,38 @@ class StepMotor:
         GPIO.output(ENABLE,GPIO.HIGH)
         GPIO.cleanup()
 
+    def motorDiffSteps(self):
+        self.initController()
+        # Drive the motor backward
+        GPIO.output(DIR,GPIO.LOW)
+        for i in range(0,1000):
+            GPIO.output(MS1,GPIO.HIGH)
+            GPIO.output(MS2,GPIO.LOW)
+            GPIO.output(STEP,GPIO.HIGH)
+            time.sleep(.001)
+            GPIO.output(STEP,GPIO.LOW)
+        time.sleep(1.5)
+        for i in range(0,1000):
+            GPIO.output(MS1,GPIO.LOW)
+            GPIO.output(MS2,GPIO.HIGH)
+            GPIO.output(STEP,GPIO.HIGH)
+            time.sleep(.001)
+            GPIO.output(STEP,GPIO.LOW)
+        time.sleep(1.5)
+        for i in range(0,1000):
+            GPIO.output(MS1,GPIO.HIGH)
+            GPIO.output(MS2,GPIO.HIGH)
+            GPIO.output(STEP,GPIO.HIGH)
+            time.sleep(.001)
+            GPIO.output(STEP,GPIO.LOW)
+
+        GPIO.output(ENABLE,GPIO.HIGH)
     def main(self):
         self.motorForward()
         time.sleep(2)
         self.motorBackward()
+        time.sleep(2)
+        self.motorDiffSteps()
 
 if __name__ == "__main__":
     stepper = StepMotor()
