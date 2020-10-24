@@ -37,7 +37,7 @@ def main():
         for work in worklist:
             item = Item.parse_obj(work)
             # Get the work type
-            if(item.workstatus != 'DONE'):
+            if(item.workstatus == 'PENDING'):
                 worktype,workarg1,workarg2 = item.value.split(':')
                 if((worktype == 'display') and (usesense == True)):
                     displaycolor(item.value,sense)
@@ -51,19 +51,28 @@ def main():
                     time.sleep(5)
                     sense.clear()
                 if(worktype == 'motordrive'):
-                    controlmotor(item.value)
-                    updateworkitem(item)
+                    result = controlmotor(item.value)
+                    if result == "error":
+                        updateworkitem(item,"error")
+                    else:
+                        updateworkitem(item)
 
         time.sleep(5)
 
-def updateworkitem(item: Item):
+def updateworkitem(item: Item,error="none"):
     item.workstatus = "DONE"
+    if(error == "error"):
+        item.workstatus = "ERROR"
     item.workdone = datetime.datetime.utcnow()
     r = requests.put("{0}/{1}".format(workurl,item.workid),data=item.json())
     r.raise_for_status()
 
 def controlmotor(work):
     worktype,direction,numRotations = work.split(':')
+    try:
+        testv = float(numRotations)
+    except:
+        return "error"
     stepper = StepMotor()
     if((worktype == 'motordrive') and (direction == 'forward')):
         stepper.motorForward(float(numRotations))
