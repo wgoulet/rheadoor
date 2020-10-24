@@ -31,6 +31,7 @@ DIR = 16
 STEP = 12
 MS1 = 1
 RESET = 7
+STATUS = 8
 
 class StepMotor:
 
@@ -50,6 +51,14 @@ class StepMotor:
         GPIO.output(DIR,GPIO.LOW)
         GPIO.output(RESET,GPIO.LOW)
         GPIO.output(RESET,GPIO.HIGH)
+
+    def showStatus(self,status):
+        self.initController()
+        if(stats == 'ok'):
+            for i in range(5):
+                GPIO.output(STATUS,GPIO.HIGH)
+                time.sleep(.2)
+                GPIO.output(STATUS,GPIO.LOW)
 
     def motorForward(self,numRotations):
         self.initController()
