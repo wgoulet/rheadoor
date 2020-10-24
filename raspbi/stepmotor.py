@@ -51,11 +51,20 @@ class StepMotor:
         GPIO.output(RESET,GPIO.LOW)
         GPIO.output(RESET,GPIO.HIGH)
 
-    def motorForward(self):
+    def motorForward(self,numRotations):
         self.initController()
         # Drive the motor forward
         GPIO.output(DIR,GPIO.LOW)
-        for i in range(0,10000):
+        # 400 is full rotation for motor so multiple this
+        # by number of desired rotations
+        if (numRotations < 1):
+            turns = float(400) * numRotations
+        else:
+            turns = 400 * numRotations
+        if (turns < 0):
+            turns = turns * -1
+
+        for i in range(0,int(turns)):
             GPIO.output(STEP,GPIO.HIGH)
             time.sleep(.001)
             GPIO.output(STEP,GPIO.LOW)
@@ -63,11 +72,28 @@ class StepMotor:
         GPIO.output(ENABLE,GPIO.HIGH)
         GPIO.cleanup()
 
-    def motorBackward(self):
+    def logicCheck(self):
+        self.initController()
+        GPIO.output(DIR,GPIO.HIGH)
+        time.sleep(2)
+        GPIO.output(DIR,GPIO.LOW)
+        time.sleep(2)
+        GPIO.output(DIR,GPIO.HIGH)
+
+    def motorBackward(self,numRotations):
         self.initController()
         # Drive the motor backward
         GPIO.output(DIR,GPIO.HIGH)
-        for i in range(0,10000):
+        # 400 is full rotation for motor so multiple this
+        # by number of desired rotations
+        if (numRotations < 1):
+            turns = float(400) * numRotations
+        else:
+            turns = 400 * numRotations
+        if (turns < 0):
+            turns = turns * -1
+
+        for i in range(0,int(turns)):
             GPIO.output(STEP,GPIO.HIGH)
             time.sleep(.001)
             GPIO.output(STEP,GPIO.LOW)
@@ -102,11 +128,12 @@ class StepMotor:
 
         GPIO.output(ENABLE,GPIO.HIGH)
     def main(self):
-        self.motorForward()
+        self.motorForward(.1)
         time.sleep(2)
-        self.motorBackward()
+        self.motorBackward(.1)
         time.sleep(2)
-        self.motorDiffSteps()
+        #self.motorDiffSteps()
+        #self.logicCheck()
 
 if __name__ == "__main__":
     stepper = StepMotor()
