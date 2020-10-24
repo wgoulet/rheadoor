@@ -128,10 +128,11 @@ class StepMotor:
 
         GPIO.output(ENABLE,GPIO.HIGH)
     def main(self):
-        self.motorForward(.1)
-        time.sleep(2)
-        self.motorBackward(.1)
-        time.sleep(2)
+        self.initController()
+        #self.motorForward(.1)
+        #time.sleep(2)
+        #self.motorBackward(.1)
+        #time.sleep(2)
         #self.motorDiffSteps()
         #self.logicCheck()
 

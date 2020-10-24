@@ -54,7 +54,7 @@ def main():
                     controlmotor(item.value)
                     updateworkitem(item)
 
-        time.sleep(30)
+        time.sleep(5)
 
 def updateworkitem(item: Item):
     item.workstatus = "DONE"
@@ -63,12 +63,12 @@ def updateworkitem(item: Item):
     r.raise_for_status()
 
 def controlmotor(work):
-    worktype,direction,duration = work.split(':')
+    worktype,direction,numRotations = work.split(':')
     stepper = StepMotor()
     if((worktype == 'motordrive') and (direction == 'forward')):
-        stepper.motorForward()
+        stepper.motorForward(float(numRotations))
     if((worktype == 'motordrive') and (direction == 'backward')):
-        stepper.motorBackward()
+        stepper.motorBackward(float(numRotations))
 
 def displaycolor(work,sense):
     work,color,message = work.split(':')
