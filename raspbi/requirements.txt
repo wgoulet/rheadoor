@@ -2,3 +2,4 @@ sense_hat
 rtimulib
 requests
 pydantic
+smbus

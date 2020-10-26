@@ -21,6 +21,7 @@
 # motion became incredibly smooth.
 
 import RPi.GPIO as GPIO
+from smbus import SMBus
 import time
 
 # Maps the GPIO pins to the step motor controller
@@ -50,6 +51,12 @@ class StepMotor:
         GPIO.output(DIR,GPIO.LOW)
         GPIO.output(RESET,GPIO.LOW)
         GPIO.output(RESET,GPIO.HIGH)
+
+    def ardMotorForward(self,numRotations):
+        addr = 0x8
+        bus = SMBus(1) # indicates /dev/ic2-1
+        bus.write_byte(addr,0x1)
+        bus.write_byte(addr,numRotations)
 
     def motorForward(self,numRotations):
         self.initController()
@@ -129,6 +136,7 @@ class StepMotor:
         GPIO.output(ENABLE,GPIO.HIGH)
     def main(self):
         self.initController()
+        self.ardMotorForward(5)
         #self.motorForward(.1)
         #time.sleep(2)
         #self.motorBackward(.1)
