@@ -61,7 +61,7 @@ class StepMotor:
         # turns.
         fullturn = math.floor(numRotations)
         if(fullturn == 0):
-            fraction = numRotations * 100
+            fraction = int(numRotations * 100)
         else:
             fraction = int((numRotations % fullturn) * 100)
         # Protocol we send is 4 ints: first is register addr of 0x0,
@@ -79,7 +79,7 @@ class StepMotor:
         # turns
         fullturn = math.floor(numRotations)
         if(fullturn == 0):
-            fraction = numRotations * 100
+            fraction = int(numRotations * 100)
         else:
             fraction = int((numRotations % fullturn) * 100)
         bus.write_i2c_block_data(addr,0x0,[2,fullturn,fraction])
@@ -164,7 +164,7 @@ class StepMotor:
         GPIO.output(ENABLE,GPIO.HIGH)
     def main(self):
         self.initController()
-        self.ardMotorForward(5)
+        self.ardMotorForward(0.25)
         # Can't send a command to the arduino while
         # it is driving the motor, so need to build
         # support for reading input from the arduino

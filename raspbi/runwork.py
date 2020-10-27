@@ -56,6 +56,12 @@ def main():
                         updateworkitem(item,"error")
                     else:
                         updateworkitem(item)
+                if(worktype == 'ardmotordrive'):
+                    result = controlmotor(item.value)
+                    if result == "error":
+                        updateworkitem(item,"error")
+                    else:
+                        updateworkitem(item)
 
         time.sleep(5)
 
@@ -78,6 +84,10 @@ def controlmotor(work):
         stepper.motorForward(float(numRotations))
     if((worktype == 'motordrive') and (direction == 'backward')):
         stepper.motorBackward(float(numRotations))
+    if((worktype == 'ardmotordrive') and (direction == 'forward')):
+        stepper.ardMotorForward(float(numRotations))
+    if((worktype == 'ardmotordrive') and (direction == 'backward')):
+        stepper.ardMotorBackward(float(numRotations))
 
 def displaycolor(work,sense):
     work,color,message = work.split(':')
