@@ -11,7 +11,7 @@ float numRotations = 5;
 int cmdComplete = false;
 char cmd[CMDMAX];
 int cmdcount = 0;
-
+int cmds[4];
 
 void setup() {
   // put your setup code here, to run once:
@@ -30,31 +30,18 @@ void setup() {
 void receiveEvent(int numBytesReceived)
 {
   Serial.println("Got an event");
-  
+  // Fill the command array with data that is received; the command
+  // will actually be executed in the main loop. Found that executing
+  // the call here caused timing issues, so better to get and store
+  // the data and let other functions act on the received data.
   while(Wire.available())
   {
-    char c = Wire.read();
-    Serial.println(int(c));
-    if(numBytesReceived < CMDMAX)
-    {
-      cmd[cmdcount] = int(c);
-      cmdcount++;
-    }
-  }
-  if(cmdcount == 2)
-  {
-    Serial.println("Got all data");
-    int motion = cmd[0];
-    int numRotation = cmd[1];
-    Serial.println(motion);
-    Serial.println(numRotation);
-    if(motion == 0x1) // 0x1 is forward
-    {
-      digitalWrite(enablePin,LOW);
-      moveForward(float(numRotation));
-    }
-    cmdcount = 0;
-  }
+    Serial.print("Storing event; cmdcount is");
+    Serial.println(cmdcount);
+    int c = Wire.read();
+    cmds[cmdcount] = c;
+    cmdcount++;
+   }
 }
 
 void resetEDPins()
@@ -66,14 +53,19 @@ void resetEDPins()
   digitalWrite(enablePin, HIGH);
 }
 
-void moveForward(float numRotations)
+void moveForward(int numRotations,int fractionalRotations)
 {
-  Serial.println("About to move");
+  Serial.println("About to move forward");
   
-  // 400 steps rotates motor fully so multiple by numRotations
+  // 200 steps rotates motor fully so multiply by numRotations
   Serial.println("rotations");
   Serial.println(numRotations);
-  float steps = 100.0 * numRotations;
+  // To support partial rotations and allow callers to send
+  // us fractional turns, fractionalRotations is expressed as
+  // the fractional part of a turn (0-100). To convert it to
+  // an actual rotation of the motor, need to multiply this by
+  // 2.
+  int steps = (200.0 * numRotations) + (fractionalRotations * 2);
   digitalWrite(dirPin,LOW );
   Serial.println(steps);
   for(int x=0; x < int(steps); x++)
@@ -83,19 +75,65 @@ void moveForward(float numRotations)
     digitalWrite(stepPin,LOW);
     delay(1);
   }
+}
+
+void moveBackward(int numRotations,int fractionalRotations)
+{
+  Serial.println("About to move backwards");
   
+  // 200 steps rotates motor fully so multiply by numRotations
+  Serial.println("rotations");
+  Serial.println(numRotations);
+  // To support partial rotations and allow callers to send
+  // us fractional turns, fractionalRotations is expressed as
+  // the fractional part of a turn (0-100). To convert it to
+  // an actual rotation of the motor, need to multiply this by
+  // 2.
+  int steps = (200.0 * numRotations) + (fractionalRotations * 2);
+  digitalWrite(dirPin,HIGH);
+  Serial.println(steps);
+  for(int x=0; x < int(steps); x++)
+  {
+    digitalWrite(stepPin,HIGH);
+    delay(1);
+    digitalWrite(stepPin,LOW);
+    delay(1);
+  }
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  delay(1);
+  while(cmds[1] != 0)
+  {
+    if(cmds[1] == 1) // 1 is forward
+    {
+      digitalWrite(enablePin,LOW);
+      moveForward(cmds[2],cmds[3]);
+      cmds[0] = 0;
+      cmds[1] = 0;
+      cmds[2] = 0;
+      cmds[3] = 0;
+      cmdcount = 0;
+    }
+    else if(cmds[1] == 2) // 2 is backward
+    {
+      digitalWrite(enablePin,LOW);
+      moveBackward(cmds[2],cmds[3]);
+      cmds[0] = 0;
+      cmds[1] = 0;
+      cmds[2] = 0;
+      cmds[3] = 0;
+      cmdcount = 0;
+    }
+    delay(1);
+  }
   while(Serial.available())
   {
     char userinput = Serial.read();
     if(userinput != ' ')
     {
       digitalWrite(enablePin,LOW);
-      moveForward(numRotations);
+      moveForward(numRotations,0);
       resetEDPins();
     }
   }
