@@ -23,6 +23,7 @@
 import RPi.GPIO as GPIO
 from smbus import SMBus
 import time
+import math
 
 # Maps the GPIO pins to the step motor controller
 # functions
@@ -55,8 +56,35 @@ class StepMotor:
     def ardMotorForward(self,numRotations):
         addr = 0x8
         bus = SMBus(1) # indicates /dev/ic2-1
-        bus.write_byte(addr,0x1)
-        bus.write_byte(addr,numRotations)
+        # If we are passed a float, we need to convert
+        # it into the full turns value and the fractional
+        # turns.
+        fullturn = math.floor(numRotations)
+        if(fullturn == 0):
+            fraction = numRotations * 100
+        else:
+            fraction = int((numRotations % fullturn) * 100)
+        # Protocol we send is 4 ints: first is register addr of 0x0,
+        # second is move direction (1 - forward, 2 - backward)
+        # 3rd and fourth are full and fractional turns
+        bus.write_i2c_block_data(addr,0x0,[1,fullturn,fraction])
+        bus.close()
+        
+        
+    def ardMotorBackward(self,numRotations):
+        addr = 0x8
+        bus = SMBus(1) # indicates /dev/ic2-1
+        # If we are passed a float, we need to convert
+        # it into the full turns value and the fractional
+        # turns
+        fullturn = math.floor(numRotations)
+        if(fullturn == 0):
+            fraction = numRotations * 100
+        else:
+            fraction = int((numRotations % fullturn) * 100)
+        bus.write_i2c_block_data(addr,0x0,[2,fullturn,fraction])
+        bus.close()
+        
 
     def motorForward(self,numRotations):
         self.initController()
@@ -137,13 +165,13 @@ class StepMotor:
     def main(self):
         self.initController()
         self.ardMotorForward(5)
-        #self.motorForward(.1)
-        #time.sleep(2)
-        #self.motorBackward(.1)
-        #time.sleep(2)
-        #self.motorDiffSteps()
-        #self.logicCheck()
-
+        # Can't send a command to the arduino while
+        # it is driving the motor, so need to build
+        # support for reading input from the arduino
+        # to know when it is safe to process a command
+        time.sleep(10)
+        self.ardMotorBackward(5)
+       
 if __name__ == "__main__":
     stepper = StepMotor()
     stepper.main()
