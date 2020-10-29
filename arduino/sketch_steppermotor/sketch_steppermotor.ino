@@ -1,9 +1,8 @@
 #define stepPin 2
 #define dirPin 3
-#define MS1 4
-#define MS2 5
-#define enablePin 6
-#define raspbiPin 2
+#define MS1 5
+#define MS2 6
+#define enablePin 7
 #define CMDMAX 25
 #include <Wire.h>
 
@@ -23,7 +22,6 @@ void setup() {
   pinMode(MS1, OUTPUT);
   pinMode(MS2, OUTPUT);
   pinMode(enablePin, OUTPUT);
-  pinMode(raspbiPin, OUTPUT);
   resetEDPins(); //Set step, direction, microstep and enable pins to default states
   Serial.begin(9600); //Open Serial connection for debugging
   Serial.println("Begin motor control");
@@ -53,7 +51,6 @@ void resetEDPins()
   digitalWrite(MS1, LOW);
   digitalWrite(MS2, LOW);
   digitalWrite(enablePin, HIGH);
-  digitalWrite(raspbiPin, HIGH);
 }
 
 void moveForward(int numRotations,int fractionalRotations)
