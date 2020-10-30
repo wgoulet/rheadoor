@@ -24,6 +24,7 @@ import RPi.GPIO as GPIO
 from smbus import SMBus
 import time
 import math
+import asyncio
 
 # Maps the GPIO pins to the step motor controller
 # functions
@@ -53,6 +54,18 @@ class StepMotor:
         GPIO.output(RESET,GPIO.LOW)
         GPIO.output(RESET,GPIO.HIGH)
 
+    async def getArduinoStatus():
+        addr = 0x9
+        bus = SMBus(1)
+        while(True):
+            try:
+                result = bus.read_byte(addr)
+                break
+            except IOError: 
+                pass
+        bus.close()
+        return result
+
     def ardMotorForward(self,numRotations):
         addr = 0x8
         bus = SMBus(1) # indicates /dev/ic2-1
@@ -69,6 +82,9 @@ class StepMotor:
         # 3rd and fourth are full and fractional turns
         bus.write_i2c_block_data(addr,0x0,[1,fullturn,fraction])
         bus.close()
+        result = await getArduinoStatus()
+        if(result == 0x1):
+            print("Finished work!")
         
         
     def ardMotorBackward(self,numRotations):
