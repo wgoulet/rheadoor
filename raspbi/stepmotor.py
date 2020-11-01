@@ -58,6 +58,8 @@ class StepMotor:
 
     async def getArduinoStatus(self):
         print("checking status")
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(SIGNAL,GPIO.IN)
         while(True):
             try:
                 signal = GPIO.input(SIGNAL)
