@@ -35,6 +35,7 @@ STEP = 12
 MS1 = 1
 RESET = 7
 SIGNAL = 4
+LEDSTATUS = 14
 
 class StepMotor:
 
@@ -55,6 +56,14 @@ class StepMotor:
         GPIO.output(DIR,GPIO.LOW)
         GPIO.output(RESET,GPIO.LOW)
         GPIO.output(RESET,GPIO.HIGH)
+    
+    def flashOKStatus(self):
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(LEDSTATUS,GPIO.OUT)
+        for i in range(0,5):
+            GPIO.output(LEDSTATUS,GPIO.HIGH);
+            time.sleep(1)
+            GPIO.output(LEDSTATUS,GPIO.LOW);
 
     async def getArduinoStatus(self):
         print("checking status")
@@ -91,6 +100,7 @@ class StepMotor:
         result = await self.getArduinoStatus()
         print(result)
         if(result == 0x1):
+            self.flashOKStatus()
             print("Finished work!")
             
     async def ardMotorBackward(self,numRotations):
@@ -109,6 +119,7 @@ class StepMotor:
         result = await self.getArduinoStatus()
         print(result)
         if(result == 0x1):
+            self.flashOKStatus()
             print("Finished work!")
 
     async def motorForward(self,numRotations):
