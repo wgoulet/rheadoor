@@ -46,6 +46,7 @@ class StepMotor:
         GPIO.setup(STEP,GPIO.OUT)
         GPIO.setup(DIR,GPIO.OUT)
         GPIO.setup(RESET,GPIO.OUT)
+        GPIO.setup(SIGNAL,GPIO.IN)
 
         GPIO.output(ENABLE,GPIO.LOW)
         GPIO.output(MS1,GPIO.HIGH)
@@ -57,17 +58,16 @@ class StepMotor:
 
     async def getArduinoStatus(self):
         print("checking status")
-        addr = 0x8
-        bus = SMBus(1)
         while(True):
             try:
-                result = bus.read_byte(addr)
-                print("Got result ok")
-                break
+                signal = GPIO.input(SIGNAL)
+                if(signal == GPIO.HIGH):
+                    print("Got result ok")
+                    result = 0x1
+                    break
             except IOError: 
-                print("io error reading")
+                print("error getting status")
                 pass
-        bus.close()
         return result
 
     async def ardMotorForward(self,numRotations):
@@ -90,8 +90,7 @@ class StepMotor:
         print(result)
         if(result == 0x1):
             print("Finished work!")
-        
-        
+            
     async def ardMotorBackward(self,numRotations):
         addr = 0x8
         bus = SMBus(1) # indicates /dev/ic2-1
@@ -105,7 +104,10 @@ class StepMotor:
             fraction = int((numRotations % fullturn) * 100)
         bus.write_i2c_block_data(addr,0x0,[2,fullturn,fraction])
         bus.close()
-        
+        result = await self.getArduinoStatus()
+        print(result)
+        if(result == 0x1):
+            print("Finished work!")
 
     async def motorForward(self,numRotations):
         self.initController()
@@ -191,7 +193,7 @@ class StepMotor:
         # support for reading input from the arduino
         # to know when it is safe to process a command
         time.sleep(10)
-        await self.ardMotorBackward(5)
+        await self.ardMotorBackward(10.25)
        
 if __name__ == "__main__":
     stepper = StepMotor()
