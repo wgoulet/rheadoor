@@ -164,7 +164,7 @@ class StepMotor:
         GPIO.output(ENABLE,GPIO.HIGH)
     def main(self):
         self.initController()
-        self.ardMotorForward(0.25)
+        self.ardMotorForward(7.25)
         # Can't send a command to the arduino while
         # it is driving the motor, so need to build
         # support for reading input from the arduino
