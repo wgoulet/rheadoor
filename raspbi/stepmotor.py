@@ -34,10 +34,11 @@ DIR = 16
 STEP = 12
 MS1 = 1
 RESET = 7
+SIGNAL = 4
 
 class StepMotor:
 
-    def initController(self):
+    async def initController(self):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(ENABLE,GPIO.OUT)
         GPIO.setup(MS1,GPIO.OUT)
@@ -54,19 +55,22 @@ class StepMotor:
         GPIO.output(RESET,GPIO.LOW)
         GPIO.output(RESET,GPIO.HIGH)
 
-    async def getArduinoStatus():
-        addr = 0x9
+    async def getArduinoStatus(self):
+        print("checking status")
+        addr = 0x8
         bus = SMBus(1)
         while(True):
             try:
                 result = bus.read_byte(addr)
+                print("Got result ok")
                 break
             except IOError: 
+                print("io error reading")
                 pass
         bus.close()
         return result
 
-    def ardMotorForward(self,numRotations):
+    async def ardMotorForward(self,numRotations):
         addr = 0x8
         bus = SMBus(1) # indicates /dev/ic2-1
         # If we are passed a float, we need to convert
@@ -82,12 +86,13 @@ class StepMotor:
         # 3rd and fourth are full and fractional turns
         bus.write_i2c_block_data(addr,0x0,[1,fullturn,fraction])
         bus.close()
-        result = await getArduinoStatus()
+        result = await self.getArduinoStatus()
+        print(result)
         if(result == 0x1):
             print("Finished work!")
         
         
-    def ardMotorBackward(self,numRotations):
+    async def ardMotorBackward(self,numRotations):
         addr = 0x8
         bus = SMBus(1) # indicates /dev/ic2-1
         # If we are passed a float, we need to convert
@@ -102,7 +107,7 @@ class StepMotor:
         bus.close()
         
 
-    def motorForward(self,numRotations):
+    async def motorForward(self,numRotations):
         self.initController()
         # Drive the motor forward
         GPIO.output(DIR,GPIO.LOW)
@@ -123,7 +128,7 @@ class StepMotor:
         GPIO.output(ENABLE,GPIO.HIGH)
         GPIO.cleanup()
 
-    def logicCheck(self):
+    async def logicCheck(self):
         self.initController()
         GPIO.output(DIR,GPIO.HIGH)
         time.sleep(2)
@@ -131,7 +136,7 @@ class StepMotor:
         time.sleep(2)
         GPIO.output(DIR,GPIO.HIGH)
 
-    def motorBackward(self,numRotations):
+    async def motorBackward(self,numRotations):
         self.initController()
         # Drive the motor backward
         GPIO.output(DIR,GPIO.HIGH)
@@ -152,7 +157,7 @@ class StepMotor:
         GPIO.output(ENABLE,GPIO.HIGH)
         GPIO.cleanup()
 
-    def motorDiffSteps(self):
+    async def motorDiffSteps(self):
         self.initController()
         # Drive the motor backward
         GPIO.output(DIR,GPIO.LOW)
@@ -178,17 +183,17 @@ class StepMotor:
             GPIO.output(STEP,GPIO.LOW)
 
         GPIO.output(ENABLE,GPIO.HIGH)
-    def main(self):
-        self.initController()
-        self.ardMotorForward(0.25)
+    async def main(self):
+        await self.initController()
+        await self.ardMotorForward(10.25)
         # Can't send a command to the arduino while
         # it is driving the motor, so need to build
         # support for reading input from the arduino
         # to know when it is safe to process a command
         time.sleep(10)
-        self.ardMotorBackward(5)
+        await self.ardMotorBackward(5)
        
 if __name__ == "__main__":
     stepper = StepMotor()
-    stepper.main()
+    asyncio.run(stepper.main())
     
