@@ -91,49 +91,6 @@ oauth.register(
     }
 )
 
-# Setup the user session tracking layer
-app.add_middleware(SessionMiddleware, secret_key=client_secret)
-
-# User facing routes
-@app.route("/user")
-async def display_user(request):
-    pprint.pprint(request)
-    user = request.session.get('user')
-    if user:
-        data = json.dumps(user)
-        html = (
-            f'<pre>{data}</pre>'
-            '<a href="/logout">logout</a>'
-        )
-        return HTMLResponse(html)
-    return HTMLResponse('<a href="/login">login</a>')
-
-@app.route('/login')
-async def login(request):
-    redirect_uri = request.url_for('auth')
-    return await oauth.keycloak.authorize_redirect(request, redirect_uri)
-
-@app.route('/auth')
-async def auth(request):
-    token = await oauth.keycloak.authorize_access_token(request)
-    user = await oauth.keycloak.parse_id_token(request, token)
-    # Verify user is authorized to use the app by making sure they
-    # have the RheaUser role assigned
-    if('RheaUser' in user['realm_access']['roles']):
-        request.session['user'] = dict(user)
-        return RedirectResponse(url='/')
-    else:
-        return HTMLResponse('<h1>Sorry, you are not authorized to use this service!</h1>')
-
-
-@app.route("/")
-def read_root(request):
-    user = request.session.get('user')
-    if user:
-        return JSONResponse({"Hello": "World"})
-    else:
-        return HTMLResponse('<a href="/login">login</a>')
-
 # API client routes
 @app.route("/list")
 def read_root(request):
