@@ -1,7 +1,12 @@
-Frontend web application for users to interact with Rheadoor
+# Frontend web application for users to interact with Rheadoor
 
-# Getting Started with Create React App
+This is the web front end application that interacts with the backend service that processes work requests from users.
 
+The front end content is rendered by a couple of components, a public facing component that doesn't require user authentication and a secured component that is only visible to authenticated users. Authentication is performed using OAuth2.0/OIDC with the authorization code flow. Interaction with the backend is handled by the QueryAPI component that submits API requests to the backend service. Requests sent to the backend are authenticated and authorized using the access token returned from Keycloak and user role information extracted from the id_token.
+
+Responses from the API are rendered in tables; authorized requests that are accepted are shown in BasicTable, unauthorized errors are shown using ErrorTable.
+
+## Boiler plate instructions from create-react-app
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
