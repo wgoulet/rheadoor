@@ -54,9 +54,7 @@ app.add_middleware(AuthenticateMiddleware,
             'audience': 'apicallers'
         }
     },
-    # Paths that will be used by frontend app will not be protected by the AuthenticateMiddleware,
-    # so exclude them. These paths will be protected by user authentication via OAuth
-    public_paths={'/','/public','/user','/login','/auth'},
+    public_paths={'/public'},
 )
 
 origins = [
