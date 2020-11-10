@@ -5,6 +5,10 @@ import Secured from './Secured';
 import './App.css';
 
 class App extends Component {
+   constructor(props) {
+    super(props);
+    
+  }
 
   render() {
     return (
@@ -16,6 +20,7 @@ class App extends Component {
           </ul>
           <Route exact path="/" component={Welcome} />
           <Route path="/secured" component={Secured} />
+          
         </div>
       </BrowserRouter>
     );

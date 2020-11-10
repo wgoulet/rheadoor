@@ -1,13 +1,45 @@
 import React, { Component } from 'react';
+import BasicTable from './BasicTable';
+import ErrorTable from './ErrorTable';
+import BasicTableDemo from './DemoBasicTable';
 
 class APIResponse extends Component {
   render() {
-    if(this.props.response)
-      return ( <pre>{this.props.response}</pre> );
-    else
-      return (<div/>);
-  }
-}
+        if(this.props.response)
+        {
+          const columns = [
+          {
+            Header: "Key",
+            accessor: "key",
+          },
+          {
+            Header: "Value",
+            accessor: "value",
+          }
+          ]
+          // Parse the data from the API response to display in table. Valid replies will be shown in a BasicTable;
+          // errors will be shown in ErrorTable.
+          var reply = JSON.parse(this.props.response);
+          if(reply.hasOwnProperty("name")) {
+            var indata = [{name:reply.name,value:reply.value,workid:reply.workid,status:reply.workstatus,workcreated:reply.workcreated}]
+          
+            return (<div>
+              <p className="Table-header">Basic Table</p>
+              <BasicTable data={indata}/>
+              </div>);
+          }
+          else {
+            var indata = [{error:reply.error,message:reply.message}];
+            return (<div>
+              <p className="Table-header">Basic Table</p>
+              <ErrorTable data={indata}/>
+              </div>);
+          }
+        }
+        else {
+          return (<div/>);
+        }
+}};
 
 class QueryAPI extends Component {
 
@@ -47,12 +79,17 @@ class QueryAPI extends Component {
       body: JSON.stringify(item)
     };
 
+    // Fetch the reply from the server. If a non-200 error code is returned, parse the JSON body from 
+    // the reply and send it back to caller so they can display the error.
     fetch('http://localhost:8000/items', myInit)
-      .then(response => {
+      .then(response => Promise.all([response,response.json()]))
+      .then(([response,json]) => {
         if (response.status === 200)
-          return response.json();
-        else
-          return { status: response.status, message: response.statusText }
+          return json;
+        else if(response.status === 403) {
+          var errdata = {error:"API error",message:JSON.stringify(json)};
+          return errdata;
+        }
       })
       .then(json => this.setState((state, props) => ({
         response: JSON.stringify(json, null, 2)
