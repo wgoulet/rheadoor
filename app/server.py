@@ -72,26 +72,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Setup authentication for users using the front end web application. Users that will access the web application
-# must have a valid user account in the Keycloak master realm
-oauth = OAuth()
-credfile = 'servercreds.json'
-creds = json.load(open(credfile))
-client_id = creds['resource']
-client_secret = creds['credentials']['secret']
-
-CONF_URL = 'https://keycloak.wgoulet.com/auth/realms/master/.well-known/openid-configuration'
-oauth.register(
-    name='keycloak',
-    server_metadata_url=CONF_URL,
-    client_id=client_id,
-    client_secret=client_secret,
-    client_kwargs={
-        'scope': 'openid email profile'
-    }
-)
-
-# API client routes
 @app.route("/list")
 def read_root(request):
     return JSONResponse({"you are": "authenticated"})
