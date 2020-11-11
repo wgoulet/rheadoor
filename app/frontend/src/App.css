@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,600,700');
 .App {
   text-align: center;
 }
@@ -35,4 +36,37 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.container {
+   display: grid;
+ 
+   grid-template-columns: 10% 1fr;
+   grid-template-rows: 72px 1fr;
+ 
+   grid-template-areas:
+ 
+   "sidebar head head head"
+   "sidebar main main main"
+   "sidebar main main main"
+   "sidebar main main main";
+ 
+   /* grid-container height = 100% of viewport height */
+   height: 100vh;
+}
+
+.grid-sidebar {
+   grid-area: sidebar;
+}
+.header {
+   grid-area: head;
+}
+.content {
+   grid-area: main;
+   background-color: aqua;
+}
+
+.header {
+   grid-area: head;
+   box-shadow: 0 1px 0 0 #eaedf3;
 }
