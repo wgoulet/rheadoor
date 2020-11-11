@@ -21,11 +21,8 @@ class App extends Component {
             <div class="header" />
             <div class="content" />           
           </div>
+          <div class="header">Home Page</div>
           <div class="content">
-              <ul>
-                <li><Link to="/">public component</Link></li>
-                <li><Link to="/secured">secured component</Link></li>
-              </ul>
               <Route exact path="/" component={Welcome} />
               <Route path="/secured" component={Secured} />
             </div>
