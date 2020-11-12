@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Keycloak from 'keycloak-js';
-import QueryAPI from './QueryAPI'
+import QueryAPI from './QueryAPI';
+import Typography from '@material-ui/core/Typography';
+import 'fontsource-roboto';
 
 class Secured extends Component {
 
@@ -17,11 +19,18 @@ class Secured extends Component {
   }
 
   render() {
+   const textStyle = {
+      //background: '#d32f2f',
+      //borderRadius: 3,
+      //border: 0,
+      //color: 'white',
+      //height: 48,
+      marginLeft: '30px',
+    };
+
     if (this.state.keycloak) {
       if (this.state.authenticated) return (
         <div>
-          <p>This is a Keycloak-secured component of your application. You shouldn't be able
-          to see this unless you've authenticated with Keycloak.</p>
           <QueryAPI keycloak={this.state.keycloak}/>
         </div>
       ); else return (<div>Unable to authenticate!</div>)

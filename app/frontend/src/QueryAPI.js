@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import BasicTable from './BasicTable';
 import ErrorTable from './ErrorTable';
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+
+
 
 class APIResponse extends Component {
   render() {
@@ -139,11 +143,40 @@ class QueryAPI extends Component {
       })
   }
 
+  
+
   render() {
+    const openButton = {
+      background: '#4caf50',
+      borderRadius: 3,
+      border: 0,
+      color: 'white',
+      height: 48,
+      padding: '0 30px',
+      boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+      marginRight: '30px',
+      marginLeft: '100px',
+      marginTop: '50px',
+    };
+
+    const closeButton = {
+      background: '#d32f2f',
+      borderRadius: 3,
+      border: 0,
+      color: 'white',
+      height: 48,
+      padding: '0 30px',
+      boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+      marginTop: '50px',
+    };
+
     return (
+      
       <div className="QueryAPI">
-        <button onClick={this.handleForwardClick}>Move Motor Forward</button>
-        <button onClick={this.handleBackwardClick}>Move Motor Backword</button>
+        <ButtonGroup>
+          <Button style={openButton} onClick={this.handleForwardClick}>Open Door</Button>
+          <Button style={closeButton} onClick={this.handleBackwardClick}>Close Door</Button>
+        </ButtonGroup>
         <APIResponse response={this.state.response}/>
       </div>
     );

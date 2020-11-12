@@ -10,6 +10,7 @@
     "@testing-library/react": "^11.1.1",
     "@testing-library/user-event": "^12.2.0",
     "bootstrap": "^4.5.3",
+    "fontsource-roboto": "^3.0.3",
     "keycloak-js": "11.0.3",
     "react": "^17.0.1",
     "react-bootstrap-table": "^4.3.1",

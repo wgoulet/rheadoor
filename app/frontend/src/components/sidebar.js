@@ -120,7 +120,7 @@ class Sidebar extends Component {
                     </Icon>
                     <SidebarMenuItemLabel>
                         <Button to="/" component={Link} color="primary">
-                                Home
+                                Door Controls
                         </Button>
                     </SidebarMenuItemLabel>
                 </SidebarMenuItem>

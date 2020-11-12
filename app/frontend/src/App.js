@@ -4,6 +4,8 @@ import Welcome from './Welcome';
 import Secured from './Secured';
 import Sidebar from "./components/sidebar";
 import './App.css';
+import Typography from '@material-ui/core/Typography';
+import 'fontsource-roboto';
 
 
 class App extends Component {
@@ -13,19 +15,26 @@ class App extends Component {
   }
 
   render() {
+    const textStyle = {
+      marginLeft: '50px',
+    };
     return (
       <BrowserRouter>
         <div className="container">
           <div class="grid-container">
             <Sidebar class="grid-sidebar" />
-            <div class="header" />
+            <div class="header"/>
             <div class="content" />           
           </div>
-          <div class="header">Home Page</div>
+          <div class="header">
+              <Typography variant="h3" component="h3" gutterBottom style={textStyle}>
+                Chicken Coop Door Control
+              </Typography>
+          </div>
           <div class="content">
               <Route exact path="/" component={Welcome} />
               <Route path="/secured" component={Secured} />
-            </div>
+          </div>
         </div>
       </BrowserRouter>
     );
