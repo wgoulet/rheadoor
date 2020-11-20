@@ -182,7 +182,9 @@ class StepMotor:
              if(direction == 'backward'):
                   self.ardMotorBackward(rotation)
         else:
-              print("didn't get valid arguments, running self test")
+              print("Didn't get valid arguments, running self test")
+              print("Run with \'python stepmotor.py [direction] [number of rotations]\'")
+              print("Example \'python stepmotor.py forward 1.75")
               self.ardMotorForward(7.25)
               # Can't send a command to the arduino while
               # it is driving the motor, so need to build
