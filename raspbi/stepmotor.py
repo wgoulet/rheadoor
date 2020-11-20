@@ -24,6 +24,8 @@ import RPi.GPIO as GPIO
 from smbus import SMBus
 import time
 import math
+import sys
+import re
 
 # Maps the GPIO pins to the step motor controller
 # functions
@@ -162,17 +164,34 @@ class StepMotor:
             GPIO.output(STEP,GPIO.LOW)
 
         GPIO.output(ENABLE,GPIO.HIGH)
-    def main(self):
+    def main(self,args):
         self.initController()
-        self.ardMotorForward(7.25)
-        # Can't send a command to the arduino while
-        # it is driving the motor, so need to build
-        # support for reading input from the arduino
-        # to know when it is safe to process a command
-        time.sleep(10)
-        self.ardMotorBackward(5)
+        rotation = 0
+        direction = ''
+        if(len(args) > 1):
+             m = re.search(r'forward|backward',args[1])
+             if m:
+                  direction = m.group(0)
+             m = re.search(r'(\d+\.\d+)', args[2])
+             if m:
+                  rotation = float(m.group(0))
+        if((rotation > 0) and (direction != '')):
+             print("Rotating {0} {1} times".format(direction, rotation))
+             if(direction == 'forward'):
+                  self.ardMotorForward(rotation)
+             if(direction == 'backward'):
+                  self.ardMotorBackward(rotation)
+        else:
+              print("didn't get valid arguments, running self test")
+              self.ardMotorForward(7.25)
+              # Can't send a command to the arduino while
+              # it is driving the motor, so need to build
+              # support for reading input from the arduino
+              # to know when it is safe to process a command
+              time.sleep(10)
+              self.ardMotorBackward(5)
        
 if __name__ == "__main__":
     stepper = StepMotor()
-    stepper.main()
+    stepper.main(sys.argv)
     
