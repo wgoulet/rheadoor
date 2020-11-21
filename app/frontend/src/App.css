@@ -41,7 +41,7 @@
 .container {
    display: grid;
  
-   grid-template-columns: 15% 1fr;
+   grid-template-columns: 20% 1fr;
    grid-template-rows: 72px 1fr;
  
    grid-template-areas:

@@ -64,7 +64,7 @@ class QueryAPI extends Component {
   handleForwardClick = () => {
     var item = {};
     item['name'] = 'work50';
-    item['value'] = 'ardmotordrive:forward:75';
+    item['value'] = 'ardmotordrive:forward:21.5';
     // Extract roles from the idtoken to send to server
     var roles = ''
     Object.entries(this.props.keycloak.idTokenParsed.realm_access.roles).forEach(([key, value]) => {
@@ -84,7 +84,7 @@ class QueryAPI extends Component {
 
     // Fetch the reply from the server. If a non-200 error code is returned, parse the JSON body from 
     // the reply and send it back to caller so they can display the error.
-    fetch('http://localhost:8000/items', myInit)
+    fetch('https://rheadoor.wgoulet.com/items', myInit)
       .then(response => Promise.all([response,response.json()]))
       .then(([response,json]) => {
         if (response.status === 200)
@@ -105,7 +105,7 @@ class QueryAPI extends Component {
    handleBackwardClick = () => {
     var item = {};
     item['name'] = 'work50';
-    item['value'] = 'ardmotordrive:backward:75';
+    item['value'] = 'ardmotordrive:backward:21.5';
     // Extract roles from the idtoken to send to server
     var roles = ''
     Object.entries(this.props.keycloak.idTokenParsed.realm_access.roles).forEach(([key, value]) => {
@@ -125,7 +125,7 @@ class QueryAPI extends Component {
 
     // Fetch the reply from the server. If a non-200 error code is returned, parse the JSON body from 
     // the reply and send it back to caller so they can display the error.
-    fetch('http://localhost:8000/items', myInit)
+    fetch('https://rheadoor.wgoulet.com/items', myInit)
       .then(response => Promise.all([response,response.json()]))
       .then(([response,json]) => {
         if (response.status === 200)
@@ -174,8 +174,8 @@ class QueryAPI extends Component {
       
       <div className="QueryAPI">
         <ButtonGroup>
-          <Button style={openButton} onClick={this.handleForwardClick}>Open Door</Button>
-          <Button style={closeButton} onClick={this.handleBackwardClick}>Close Door</Button>
+          <Button style={openButton} onClick={this.handleBackwardClick}>Open Door</Button>
+          <Button style={closeButton} onClick={this.handleForwardClick}>Close Door</Button>
         </ButtonGroup>
         <APIResponse response={this.state.response}/>
       </div>
