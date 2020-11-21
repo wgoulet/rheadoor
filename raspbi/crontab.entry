@@ -1,0 +1,1 @@
+@reboot /home/pi/.local/share/virtualenvs/raspbi-Pmn_b57K/bin/python /home/pi/code/rheadoor/raspbi/runwork.py

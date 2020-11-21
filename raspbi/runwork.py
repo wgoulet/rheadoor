@@ -85,6 +85,7 @@ def controlmotor(work):
     if((worktype == 'motordrive') and (direction == 'backward')):
         stepper.motorBackward(float(numRotations))
     if((worktype == 'ardmotordrive') and (direction == 'forward')):
+        print("Commanding arduino")
         stepper.ardMotorForward(float(numRotations))
     if((worktype == 'ardmotordrive') and (direction == 'backward')):
         stepper.ardMotorBackward(float(numRotations))
