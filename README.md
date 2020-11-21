@@ -16,4 +16,4 @@ Requires Python 3.7 or greater and a Raspberry Pi 4 running latest Raspian OS.
 
 Wiring Diagram
 --------------
-![rheadoor_bb.svg](https://github.com/wgoulet/rheadoor/blob/main/images/rheadoor_bb.svg)
+![rheadoor_bb.png](https://github.com/wgoulet/rheadoor/blob/main/images/rheadoor_bb.png)
