@@ -25,6 +25,8 @@ from smbus import SMBus
 import time
 import math
 import asyncio
+import sys
+import re
 
 # Maps the GPIO pins to the step motor controller
 # functions
@@ -199,16 +201,36 @@ class StepMotor:
 
         GPIO.output(ENABLE,GPIO.HIGH)
     async def main(self):
+    aysnc def main(self,args):
         await self.initController()
-        await self.ardMotorForward(10.25)
-        # Can't send a command to the arduino while
-        # it is driving the motor, so need to build
-        # support for reading input from the arduino
-        # to know when it is safe to process a command
-        time.sleep(10)
-        await self.ardMotorBackward(10.25)
+        rotation = 0
+        direction = ''
+        if(len(args) > 1):
+             m = re.search(r'forward|backward',args[1])
+             if m:
+                  direction = m.group(0)
+             m = re.search(r'(\d+\.\d+)', args[2])
+             if m:
+                  rotation = float(m.group(0))
+        if((rotation > 0) and (direction != '')):
+             print("Rotating {0} {1} times".format(direction, rotation))
+             if(direction == 'forward'):
+                  await self.ardMotorForward(rotation)
+             if(direction == 'backward'):
+                  await self.ardMotorBackward(rotation)
+        else:
+              print("Didn't get valid arguments, running self test")
+              print("Run with \'python stepmotor.py [direction] [number of rotations]\'")
+              print("Example \'python stepmotor.py forward 1.75")
+              await self.ardMotorForward(7.25)
+              # Can't send a command to the arduino while
+              # it is driving the motor, so need to build
+              # support for reading input from the arduino
+              # to know when it is safe to process a command
+              time.sleep(10)
+              await self.ardMotorBackward(5)
        
 if __name__ == "__main__":
     stepper = StepMotor()
-    asyncio.run(stepper.main())
+    stepper.main(sys.argv)
     

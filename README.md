@@ -1,4 +1,5 @@
 Rheadoor
+========
 
 This project was inspired by a buddy who recently started raising chickens here in Chicago.
 
@@ -12,3 +13,7 @@ Sparkfun EasyDriver - header pins soldered
 Stepper motor 17HS16-2004S
 
 Requires Python 3.7 or greater and a Raspberry Pi 4 running latest Raspian OS.
+
+Wiring Diagram
+--------------
+![rheadoor_bb.png](https://github.com/wgoulet/rheadoor/blob/main/images/rheadoor_bb.png)
