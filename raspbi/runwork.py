@@ -5,6 +5,8 @@ from stepmotor import StepMotor
 import requests
 import datetime
 import time
+import asyncio
+
 red = (255, 0, 0)
 blue = (0,0,255)
 green = (0,255,0)
@@ -57,7 +59,7 @@ def main():
                     else:
                         updateworkitem(item)
                 if(worktype == 'ardmotordrive'):
-                    result = controlmotor(item.value)
+                    result = asyncio.run(controlmotor(item.value))
                     if result == "error":
                         updateworkitem(item,"error")
                     else:
@@ -73,22 +75,22 @@ def updateworkitem(item: Item,error="none"):
     r = requests.put("{0}/{1}".format(workurl,item.workid),data=item.json())
     r.raise_for_status()
 
-def controlmotor(work):
+async def controlmotor(work):
     worktype,direction,numRotations = work.split(':')
     try:
         testv = float(numRotations)
     except:
         return "error"
     stepper = StepMotor()
+    await stepper.initController()
     if((worktype == 'motordrive') and (direction == 'forward')):
         stepper.motorForward(float(numRotations))
     if((worktype == 'motordrive') and (direction == 'backward')):
         stepper.motorBackward(float(numRotations))
     if((worktype == 'ardmotordrive') and (direction == 'forward')):
-        print("Commanding arduino")
-        stepper.ardMotorForward(float(numRotations))
+        await stepper.ardMotorForward(float(numRotations))
     if((worktype == 'ardmotordrive') and (direction == 'backward')):
-        stepper.ardMotorBackward(float(numRotations))
+        await stepper.ardMotorBackward(float(numRotations))
 
 def displaycolor(work,sense):
     work,color,message = work.split(':')

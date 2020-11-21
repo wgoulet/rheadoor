@@ -3,6 +3,7 @@
 #define MS1 5
 #define MS2 6
 #define enablePin 7
+#define signalPin 20
 #define CMDMAX 25
 #include <Wire.h>
 
@@ -22,6 +23,7 @@ void setup() {
   pinMode(MS1, OUTPUT);
   pinMode(MS2, OUTPUT);
   pinMode(enablePin, OUTPUT);
+  pinMode(signalPin, OUTPUT);
   resetEDPins(); //Set step, direction, microstep and enable pins to default states
   Serial.begin(9600); //Open Serial connection for debugging
   Serial.println("Begin motor control");
@@ -51,6 +53,7 @@ void resetEDPins()
   digitalWrite(MS1, LOW);
   digitalWrite(MS2, LOW);
   digitalWrite(enablePin, HIGH);
+  digitalWrite(signalPin, LOW);
 }
 
 void moveForward(int numRotations,int fractionalRotations)
@@ -75,6 +78,9 @@ void moveForward(int numRotations,int fractionalRotations)
     digitalWrite(stepPin,LOW);
     delay(1);
   }
+  digitalWrite(signalPin,HIGH);
+  delay(50);
+  digitalWrite(signalPin,LOW);
 }
 
 void moveBackward(int numRotations,int fractionalRotations)
@@ -99,6 +105,9 @@ void moveBackward(int numRotations,int fractionalRotations)
     digitalWrite(stepPin,LOW);
     delay(1);
   }
+  digitalWrite(signalPin,HIGH);
+  delay(50);
+  digitalWrite(signalPin,LOW);
 }
 
 void loop() {
