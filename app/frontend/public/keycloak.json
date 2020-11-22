@@ -1,8 +1,1 @@
-{
-	"realm": "master",
-	"auth-server-url": "https://keycloak.wgoulet.com/auth/",
-	"ssl-required": "external",
-	"resource": "reactfrontend",
-	"public-client": true,
-	"confidential-port": 0
-}
+keycloak.json.dev
