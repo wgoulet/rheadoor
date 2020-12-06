@@ -34,6 +34,7 @@ class App extends Component {
           <div class="content">
               <Route exact path="/" component={Welcome} />
               <Route path="/secured" component={Secured} />
+              <Route path="/logout" component={Secured}  />
           </div>
         </div>
       </BrowserRouter>

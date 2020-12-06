@@ -141,7 +141,11 @@ class Sidebar extends Component {
                             </MuiThemeProvider>
                         </SidebarMenuItemLabel>
                 </SidebarMenuItem>
-                <MenuSignOut>Sign Out</MenuSignOut>
+                <MenuSignOut>
+                    <Button to="/logout" component={Link} color="primary">
+                        Sign Out
+                    </Button>
+                </MenuSignOut>
             </SidebarMenu>
         </SidebarContainer>;
     }

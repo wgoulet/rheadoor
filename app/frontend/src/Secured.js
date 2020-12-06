@@ -29,7 +29,12 @@ class Secured extends Component {
     };
 
     if (this.state.keycloak) {
-      if (this.state.authenticated) return (
+      // Handle logout by checking if we were called with the logout path.
+      if(this.props.match.path === '/logout')
+      {
+        this.state.keycloak.logout({redirectUri: 'http://localhost:3000'});
+      }
+      else if (this.state.authenticated) return (
         <div>
           <QueryAPI keycloak={this.state.keycloak}/>
         </div>
