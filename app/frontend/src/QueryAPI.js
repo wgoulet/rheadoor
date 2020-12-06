@@ -202,15 +202,51 @@ class QueryAPI extends Component {
       })
   }
 
-  handleForwardClick = () => {
+  handleClicks = (event) => {
+    // Strange workaround, when clicking on buttons in buttongroup
+    // found that event target was the label in the button if clicking on the
+    // label portion of the button but if clicked outside the button label (but still
+    // within the button boundary), the event target was the button itself. So
+    // we'll fire this event if either the label or the button is the event target.
+    if((event.target.offsetParent.value === 'forward:1') ||
+    (event.target.value === 'forward:1'))
+    {
+      this.handleForwardClick(event,1,0);
+    }
+    else if((event.target.offsetParent.value === 'forward:.5') ||
+    (event.target.value === 'forward:.5'))
+    {
+      this.handleForwardClick(event,0,50);
+    }
+    else if((event.target.offsetParent.value === 'backward:1') ||
+    (event.target.value === 'backward:1'))
+    {
+      this.handleBackwardClick(event,1,0);
+    }
+    else if((event.target.offsetParent.value === 'backward:.5') ||
+    (event.target.value === 'backward:.5'))
+    {
+      this.handleBackwardClick(event,0,50);
+    }
+  }
+
+  handleForwardClick = (event,fturn,pturn) => {
     var item = {};
     item['name'] = 'work50';
     var partialturn = 0;
     var fullturn = 0;
-    if(this.state.fullTurnValue) {
+    if(fturn !== undefined)
+    {
+      fullturn = fturn;
+    }
+    else if(this.state.fullTurnValue) {
       fullturn = this.state.fullTurnValue;
     }
-    if(this.state.partialTurnValue) {
+    if(pturn !== undefined)
+    {
+      partialturn = pturn;
+    }
+    else if(this.state.partialTurnValue) {
       partialturn = this.state.partialTurnValue;
     }
     item['value'] = 'ardmotordrive:forward:' + fullturn + '.' + partialturn;
@@ -252,15 +288,23 @@ class QueryAPI extends Component {
       })
   }
 
-   handleBackwardClick = () => {
+   handleBackwardClick = (event,fturn,pturn) => {
     var item = {};
     item['name'] = 'work50';
     var partialturn = 0;
     var fullturn = 0;
-    if(this.state.fullTurnValue) {
+    if(fturn !== undefined)
+    {
+      fullturn = fturn;
+    }
+    else if(this.state.fullTurnValue) {
       fullturn = this.state.fullTurnValue;
     }
-    if(this.state.partialTurnValue) {
+    if(pturn !== undefined)
+    {
+      partialturn = pturn;
+    }
+    else if(this.state.partialTurnValue) {
       partialturn = this.state.partialTurnValue;
     }
     item['value'] = 'ardmotordrive:backward:' + fullturn + '.' + partialturn;
@@ -379,11 +423,11 @@ class QueryAPI extends Component {
            ) : null}
         </div>
         <div>
-          <ButtonGroup>
-            <Button style={openFineButton}>One Turn Open</Button>
-            <Button style={openFineButton}>Half Turn Open</Button>
-            <Button style={closeFineButton}>One Turn Close</Button>
-            <Button style={closeFineButton}>Half Turn Close</Button>
+          <ButtonGroup onClick={this.handleClicks}>
+            <Button style={openFineButton} value="backward:1">One Turn Open</Button>
+            <Button style={openFineButton} value="backward:.5">Half Turn Open</Button>
+            <Button style={closeFineButton} value="forward:1">One Turn Close</Button>
+            <Button style={closeFineButton} value="forward:.5">Half Turn Close</Button>
           </ButtonGroup>
         </div>
         <APIResponse response={this.state.response}/>
