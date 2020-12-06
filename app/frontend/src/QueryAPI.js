@@ -27,13 +27,12 @@ class APIResponse extends Component {
           var reply = JSON.parse(this.props.response);
           if(reply.hasOwnProperty("name")) {
             var indata = [{name:reply.name,value:reply.value,workid:reply.workid,status:reply.workstatus,workcreated:reply.workcreated}]
-          
             return (<div>
               <p className="Table-header">Basic Table</p>
               <BasicTable data={indata}/>
               </div>);
           }
-          else {
+          else if(reply !== null){
             var indata = [{error:reply.error,message:reply.message}];
             return (<div>
               <p className="Table-header">Basic Table</p>
@@ -95,10 +94,10 @@ class QueryAPI extends Component {
         }
       })
       .then(json => this.setState((state, props) => ({
-        response: JSON.stringify(json, null, 2),
+        cfgresponse: JSON.stringify(json, null, 2),
         fullTurnValue: json.fullTurns, 
         partialTurnValue: json.partialTurns,
-        command: 'setfullturn'
+        command: 'getfullturn'
       })))
       .catch(err => {
         return err.toString();
@@ -144,7 +143,7 @@ class QueryAPI extends Component {
         }
       })
       .then(json => this.setState((state, props) => ({
-        response: JSON.stringify(json, null, 2),
+        cfgresponse: JSON.stringify(json, null, 2),
         fullTurnValue: json.fullTurns,
         command: 'setfullturn'
       })))
@@ -194,7 +193,7 @@ class QueryAPI extends Component {
         }
       })
       .then(json => this.setState((state, props) => ({
-        response: JSON.stringify(json, null, 2),
+        cfgresponse: JSON.stringify(json, null, 2),
         partialTurnValue: json.partialTurns,
         command: 'setpartialturn'
       })))
@@ -206,7 +205,15 @@ class QueryAPI extends Component {
   handleForwardClick = () => {
     var item = {};
     item['name'] = 'work50';
-    item['value'] = 'ardmotordrive:forward:21.5';
+    var partialturn = 0;
+    var fullturn = 0;
+    if(this.state.fullTurnValue) {
+      fullturn = this.state.fullTurnValue;
+    }
+    if(this.state.partialTurnValue) {
+      partialturn = this.state.partialTurnValue;
+    }
+    item['value'] = 'ardmotordrive:forward:' + fullturn + '.' + partialturn;
     // Extract roles from the idtoken to send to server
     var roles = ''
     Object.entries(this.props.keycloak.idTokenParsed.realm_access.roles).forEach(([key, value]) => {
@@ -367,7 +374,7 @@ class QueryAPI extends Component {
         {this.state.showConfig ?(
             <div>
               <StepCountSelector displayLabel="Full Turns" min={0} max={200} step={1} defaultValue={this.state.fullTurnValue} onChangeCommitted={this.handleFullTurnChange}/>
-              <StepCountSelector displayLabel="Partial Turns" min={0} max={100} step={1} defaultValue={0} onChangeCommitted={this.handlePartialTurnChange}/>
+              <StepCountSelector displayLabel="Partial Turns" min={0} max={100} step={1} defaultValue={this.state.partialTurnValue} onChangeCommitted={this.handlePartialTurnChange}/>
             </div>
            ) : null}
         </div>
