@@ -5,6 +5,7 @@ import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import ControlGrid from './components/ControlGrid';
 import StepCountSelector from './components/StepCountSelector';
+import { TextareaAutosize } from '@material-ui/core';
 
 
 
@@ -69,6 +70,54 @@ class QueryAPI extends Component {
   toggleHide = () => {
     var shouldShow = ! this.state.showConfig;
     this.setState({showConfig: shouldShow});
+  }
+
+  getControllerCreds = () => {
+    var shouldShow = ! this.state.showControllerCreds;
+    this.setState({showControllerCreds: shouldShow});
+    var myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization',"Bearer " + this.props.keycloak.token);
+    const myInit = {
+      method: 'GET',
+      headers: myHeaders,
+      mode: 'cors',
+      cache: 'default',
+    };  
+    var clientidval = null;
+    // Fetch the client list, find the apicallers client and retrieve the secret
+    fetch('http://localhost:8080/auth/admin/realms/master/clients?clientId=apicallers',myInit)
+      .then(response => Promise.all([response,response.json()]))
+      .then(([response,json]) => {
+          if(response.status === 200)
+          {
+            // Note this assumes only 1 matching client was returned; if multiple clients with name
+            // apicaller are defined this will break.s
+            clientidval = json[0].id;
+          }
+      })
+      .then(() => {
+        var furl = 'http://localhost:8080/auth/admin/realms/master/clients/' + clientidval + '/client-secret';
+        fetch(furl,myInit)
+          .then(response => Promise.all([response,response.json()]))
+          .then(([response,json]) => {
+            if(response.status === 200)
+            {
+              return json;
+            }
+          })
+          .then(json => this.setState((state,props) => ({
+            clientsecret: json.value,
+            clientcreds: "\nClient ID: apicallers\nClient Secret: " + json.value
+          })))
+          .catch(err => {
+            return err.toString();
+          })
+        })
+      .catch(err => {
+        return err.toString();
+      })
+    
   }
 
   getTurnValues = () => {
@@ -405,6 +454,13 @@ class QueryAPI extends Component {
       padding: '0 30px',
       marginTop: '50px',
     }
+
+    const controllerCreds = {
+      padding: '0 30px',
+      marginTop: '50px',
+      marginLeft: '100px',
+    }
+
     return (
       <div className="QueryAPI">
         <div>
@@ -412,6 +468,7 @@ class QueryAPI extends Component {
           <Button style={openButton} onClick={this.handleBackwardClick}>Open Door</Button>
           <Button style={closeButton} onClick={this.handleForwardClick}>Close Door</Button>
           <Button onClick={this.toggleHide} style={configButton}>Configure Motor Steps</Button>
+          <Button onClick={this.getControllerCreds} style={configButton}>Get Controller Credentials</Button>
         </ButtonGroup>
         </div>
         <div>
@@ -419,6 +476,13 @@ class QueryAPI extends Component {
             <div>
               <StepCountSelector displayLabel="Full Turns" min={0} max={200} step={1} defaultValue={this.state.fullTurnValue} onChangeCommitted={this.handleFullTurnChange}/>
               <StepCountSelector displayLabel="Partial Turns" min={0} max={100} step={1} defaultValue={this.state.partialTurnValue} onChangeCommitted={this.handlePartialTurnChange}/>
+            </div>
+           ) : null}
+        </div>
+        <div>
+        {this.state.showControllerCreds ?(
+            <div>
+              <TextareaAutosize style={controllerCreds} defaultValue={this.state.clientcreds} readOnly cols="70" rows="4"/>
             </div>
            ) : null}
         </div>
