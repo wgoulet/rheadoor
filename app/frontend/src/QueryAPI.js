@@ -85,14 +85,15 @@ class QueryAPI extends Component {
       cache: 'default',
     };  
     var clientidval = null;
-    // Fetch the client list, find the apicallers client and retrieve the secret
+    // Fetch the client list, find the apicallers client and retrieve the secret. This user must be assigned a role
+    // in keycloak that has view-clients permission for the realm that contains the apicallers client.
     fetch('http://localhost:8080/auth/admin/realms/master/clients?clientId=apicallers',myInit)
       .then(response => Promise.all([response,response.json()]))
       .then(([response,json]) => {
           if(response.status === 200)
           {
             // Note this assumes only 1 matching client was returned; if multiple clients with name
-            // apicaller are defined this will break.s
+            // apicaller are defined this will break.
             clientidval = json[0].id;
           }
       })
